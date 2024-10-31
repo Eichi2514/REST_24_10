@@ -7,17 +7,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.nio.charset.StandardCharsets;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -33,7 +31,7 @@ public class MemberControllerTests {
     void t1() throws Exception {
         //When
         ResultActions resultActions = mvc.perform(
-                        post("/member/login")
+                        post("/api/v1/member/login")
                                 .content("""
                                         {
                                         "username" : "user1",
@@ -45,15 +43,18 @@ public class MemberControllerTests {
                 .andDo(print());
 
         //Then
-        resultActions.andExpect(status().is2xxSuccessful());
+        resultActions.andExpect(status().is2xxSuccessful())
+                .andExpect(jsonPath("$.resultCode").value("S-1"))
+                .andExpect(jsonPath("$.msg").exists())
+                .andExpect(jsonPath("$.data.accessToken").exists());
 
-        MvcResult mvcResult = resultActions.andReturn();
+//        MvcResult mvcResult = resultActions.andReturn();
 
-        MockHttpServletResponse response = mvcResult.getResponse();
+//        MockHttpServletResponse response = mvcResult.getResponse();
 
-        String authentication = response.getHeader("Authentication");
+//        String authentication = response.getHeader("Authentication");
 
-        assertThat(authentication).isNotEmpty();
+//        assertThat(authentication).isNotEmpty();
     }
 
 
