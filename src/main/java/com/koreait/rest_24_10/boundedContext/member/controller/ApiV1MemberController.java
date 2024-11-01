@@ -1,15 +1,19 @@
 package com.koreait.rest_24_10.boundedContext.member.controller;
 
 import com.koreait.rest_24_10.base.rsData.RsData;
+import com.koreait.rest_24_10.boundedContext.member.dto.MemberDto;
 import com.koreait.rest_24_10.boundedContext.member.entity.Member;
 import com.koreait.rest_24_10.boundedContext.member.service.MemberService;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.MediaType.ALL_VALUE;
@@ -18,7 +22,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 @RequestMapping(value = "/api/v1/member", produces = APPLICATION_JSON_VALUE, consumes = APPLICATION_JSON_VALUE)
 @RequiredArgsConstructor
-public class Api1MemberController {
+public class ApiV1MemberController {
 
     private final MemberService memberService;
 
@@ -47,15 +51,19 @@ public class Api1MemberController {
     @AllArgsConstructor
     @Getter
     public static class MeResponse {
-        private final Member member;
+        private final MemberDto member;
     }
 
     //consumes = ALL_VALUE -> Json 형태로 입력받는게 필수가 아니다.
     @GetMapping(value = "/me", consumes = ALL_VALUE)
-    public RsData<MeResponse> me() {
-        Member member = memberService.findByUsername("user1").get();
+    @Operation(summary = "로그인 된 사용자 정보", security = @SecurityRequirement(name = "bearerAuth"))
+    public RsData<MeResponse> me(@AuthenticationPrincipal User user) {
+        Member member = memberService.findByUsername(user.getUsername()).get();
 
-        return RsData.of("S-1", "액세스 토큰 생성됨", new MeResponse(member));
+        return RsData.of("S-1",
+                "성공",
+                new MeResponse(MemberDto.of(member))
+        );
     }
 
 }
