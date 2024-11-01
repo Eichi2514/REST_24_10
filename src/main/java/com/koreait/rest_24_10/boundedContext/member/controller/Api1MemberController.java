@@ -3,7 +3,7 @@ package com.koreait.rest_24_10.boundedContext.member.controller;
 import com.koreait.rest_24_10.base.rsData.RsData;
 import com.koreait.rest_24_10.boundedContext.member.entity.Member;
 import com.koreait.rest_24_10.boundedContext.member.service.MemberService;
-import jakarta.servlet.http.HttpServletResponse;
+
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
